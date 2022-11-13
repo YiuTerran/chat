@@ -44,37 +44,39 @@ x-tinode-env-vars: &tinode-env-vars
   # "ICE_SERVERS_FILE": "<path to ICE servers config>"
 
 x-exporter-env-vars: &exporter-env-vars
-  "TINODE_ADDR": "http://tinode.host:6060/stats/expvar/"
+  "TINODE_ADDR": "http://localhost:6060/stats/expvar/"
   # InfluxDB configation:
-  "SERVE_FOR": "influxdb"
-  "INFLUXDB_VERSION": 1.7
-  "INFLUXDB_ORGANIZATION": "<your organization>"
-  "INFLUXDB_PUSH_INTERVAL": 30
-  "INFLUXDB_PUSH_ADDRESS": "https://mon.tinode.co/intake"
-  "INFLUXDB_AUTH_TOKEN": "<auth token>"
-  # Prometheus configuration:
-  # "SERVE_FOR": "prometheus"
-  # "PROM_NAMESPACE": "tinode"
-  # "PROM_METRICS_PATH": "/metrics"
+  #  "SERVE_FOR": "influxdb"
+  #  "INFLUXDB_VERSION": 1.7
+  #  "INFLUXDB_ORGANIZATION": "<your organization>"
+  #  "INFLUXDB_PUSH_INTERVAL": 30
+  #  "INFLUXDB_PUSH_ADDRESS": "https://mon.tinode.co/intake"
+  #  "INFLUXDB_AUTH_TOKEN": "<auth token>"
+  #   Prometheus configuration:
+  "SERVE_FOR": "prometheus"
+  "PROM_NAMESPACE": "tinode"
+  "PROM_METRICS_PATH": "/metrics"
 
 services:
   db:
-    image: mysql:5.7
+    image: mysql:8.0
     container_name: mysql
     restart: always
     # Use your own volume.
-    # volumes:
-    #   - <mysql directory in your file system>:/var/lib/mysql
+    volumes:
+      - /var/lib/mysql:/var/lib/mysql
+    ports:
+      - "3306:3306"
     environment:
       - MYSQL_ALLOW_EMPTY_PASSWORD=yes
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
       timeout: 5s
       retries: 10
 
   # Tinode.
   tinode-0:
-    << : *tinode-base
+    <<: *tinode-base
     container_name: tinode-0
     hostname: tinode-0
     # You can mount your volumes as necessary:
@@ -86,7 +88,7 @@ services:
     ports:
       - "6060:6060"
     environment:
-      << : *tinode-env-vars
+      <<: *tinode-env-vars
       "RESET_DB": ${RESET_DB:-false}
       "UPGRADE_DB": ${UPGRADE_DB:-false}
 
@@ -104,5 +106,5 @@ services:
     links:
       - tinode-0:tinode.host
     environment:
-      << : *exporter-env-vars
+      <<: *exporter-env-vars
       "WAIT_FOR": "tinode-0:6060"

@@ -1,0 +1,24 @@
+# Reference configuration for a simple Tinode server.
+# Includes:
+# * Mysql database
+# * Tinode server
+# * Tinode exporters
+
+version: '3.7'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    # Use your own volume.
+    volumes:
+      - /var/lib/mysql:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 5s
+      retries: 10
