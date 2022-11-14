@@ -55,7 +55,7 @@ func openAdapter(workerId int, jsonconf json.RawMessage) error {
 				adp = v
 			}
 		} else {
-			return errors.New("store: db adapter is not specified. Please set `store_config.use_adapter` in `tinode.conf`")
+			return errors.New("store: db adapter is not specified. Please set `store_config.use_adapter` in `tinode.json5`")
 		}
 	}
 
@@ -112,8 +112,9 @@ var Store PersistentStorageInterface
 type storeObj struct{}
 
 // Open initializes the persistence system. Adapter holds a connection pool for a database instance.
-// 	 name - name of the adapter rquested in the config file
-//   jsonconf - configuration string
+//
+//		 name - name of the adapter rquested in the config file
+//	  jsonconf - configuration string
 func (storeObj) Open(workerId int, jsonconf json.RawMessage) error {
 	if err := openAdapter(workerId, jsonconf); err != nil {
 		return err

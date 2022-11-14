@@ -110,13 +110,18 @@ const (
 )
 
 // Build version number defined by the compiler:
-// 		-ldflags "-X main.buildstamp=value_to_assign_to_buildstamp"
+//
+//	-ldflags "-X main.buildstamp=value_to_assign_to_buildstamp"
+//
 // Reported to clients in response to {hi} message.
 // For instance, to define the buildstamp as a timestamp of when the server was built add a
 // flag to compiler command line:
-// 		-ldflags "-X main.buildstamp=`date -u '+%Y%m%dT%H:%M:%SZ'`"
+//
+//	-ldflags "-X main.buildstamp=`date -u '+%Y%m%dT%H:%M:%SZ'`"
+//
 // or to set it to git tag:
-// 		-ldflags "-X main.buildstamp=`git describe --tags`"
+//
+//	-ldflags "-X main.buildstamp=`git describe --tags`"
 var buildstamp = "undef"
 
 // CredValidator holds additional config params for a credential validator.
@@ -274,7 +279,7 @@ func main() {
 
 	logFlags := flag.String("log_flags", "stdFlags",
 		"Comma-separated list of log flags (as defined in https://golang.org/pkg/log/#pkg-constants without the L prefix)")
-	configfile := flag.String("config", "tinode.conf", "Path to config file.")
+	configfile := flag.String("config", "tinode.json5", "Path to config file.")
 	// Path to static content.
 	staticPath := flag.String("static_data", defaultStaticPath, "File path to directory with static files to be served.")
 	listenOn := flag.String("listen", "", "Override address and port to listen on for HTTP(S) clients.")

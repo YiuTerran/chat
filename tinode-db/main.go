@@ -53,24 +53,25 @@ type DefAccess struct {
 
 /*
 User object in data.json
-   "createdAt": "-140h",
-   "email": "alice@example.com",
-   "tel": "17025550001",
-   "passhash": "alice123",
-   "private": {"comment": "some comment 123"},
-   "public": {"fn": "Alice Johnson", "photo": "alice-64.jpg", "type": "jpg"},
-   "state": "ok",
-   "authLevel": "auth",
-   "status": {
-     "text": "DND"
-   },
-   "username": "alice",
-	"tags": ["tag1"],
-	"addressBook": ["email:bob@example.com", "email:carol@example.com", "email:dave@example.com",
-		"email:eve@example.com","email:frank@example.com","email:george@example.com","email:tob@example.com",
-		"tel:17025550001", "tel:17025550002", "tel:17025550003", "tel:17025550004", "tel:17025550005",
-		"tel:17025550006", "tel:17025550007", "tel:17025550008", "tel:17025550009"]
-  }
+
+	   "createdAt": "-140h",
+	   "email": "alice@example.com",
+	   "tel": "17025550001",
+	   "passhash": "alice123",
+	   "private": {"comment": "some comment 123"},
+	   "public": {"fn": "Alice Johnson", "photo": "alice-64.jpg", "type": "jpg"},
+	   "state": "ok",
+	   "authLevel": "auth",
+	   "status": {
+	     "text": "DND"
+	   },
+	   "username": "alice",
+		"tags": ["tag1"],
+		"addressBook": ["email:bob@example.com", "email:carol@example.com", "email:dave@example.com",
+			"email:eve@example.com","email:frank@example.com","email:george@example.com","email:tob@example.com",
+			"tel:17025550001", "tel:17025550002", "tel:17025550003", "tel:17025550004", "tel:17025550005",
+			"tel:17025550006", "tel:17025550007", "tel:17025550008", "tel:17025550009"]
+	  }
 */
 type User struct {
 	CreatedAt   string      `json:"createdAt"`
@@ -91,11 +92,11 @@ type User struct {
 /*
 GroupTopic object in data.json
 
-   "createdAt": "-128h",
-   "name": "*ABC",
-   "owner": "carol",
-   "channel": true,
-   "public": {"fn": "Let's talk about flowers", "photo": "abc-64.jpg", "type": "jpg"}
+	"createdAt": "-128h",
+	"name": "*ABC",
+	"owner": "carol",
+	"channel": true,
+	"public": {"fn": "Let's talk about flowers", "photo": "abc-64.jpg", "type": "jpg"}
 */
 type GroupTopic struct {
 	CreatedAt    string    `json:"createdAt"`
@@ -112,13 +113,13 @@ type GroupTopic struct {
 /*
 GroupSub object in data.json
 
- "createdAt": "-112h",
- "private": "My super cool group topic",
- "topic": "*ABC",
- "user": "alice",
- "asChan: false,
- "want": "JRWPSA",
- "have": "JRWP"
+	"createdAt": "-112h",
+	"private": "My super cool group topic",
+	"topic": "*ABC",
+	"user": "alice",
+	"asChan: false,
+	"want": "JRWPSA",
+	"have": "JRWP"
 */
 type GroupSub struct {
 	CreatedAt string   `json:"createdAt"`
@@ -135,8 +136,10 @@ P2PUser topic in data.json
 
 "createdAt": "-117h",
 "users": [
-  {"name": "eve", "private": {"comment":"ho ho"}, "want": "JRWP", "have": "N"},
-  {"name": "alice", "private": {"comment": "ha ha"}}
+
+	{"name": "eve", "private": {"comment":"ho ho"}, "want": "JRWP", "have": "N"},
+	{"name": "alice", "private": {"comment": "ha ha"}}
+
 ]
 */
 type P2PUser struct {
@@ -190,7 +193,7 @@ func main() {
 	scheme := flag.String("scheme", "basic", "User's authentication scheme to update")
 	authLevel := flag.String("auth", "", "change user's authentication level (one of ROOT, AUTH, ANON)")
 	datafile := flag.String("data", "", "name of file with sample data to load")
-	conffile := flag.String("config", "./tinode.conf", "config of the database connection")
+	conffile := flag.String("config", "./tinode.json5", "config of the database connection")
 
 	flag.Parse()
 

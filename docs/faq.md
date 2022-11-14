@@ -37,7 +37,7 @@ See detailed instructions [here](../server/push/tnpg/).
 
 1. Create a project at https://firebase.google.com/ if you have not done so already.
 2. Follow instructions at https://cloud.google.com/iam/docs/creating-managing-service-account-keys to download the credentials file.
-3. Update the server config [`tinode.conf`](../server/tinode.conf#L255), section `"push"` -> `"name": "fcm"`. Do _ONE_ of the following:
+3. Update the server config [`tinode.conf`](../server/tinode.json5#L255), section `"push"` -> `"name": "fcm"`. Do _ONE_ of the following:
   * _Either_ enter the path to the downloaded credentials file into `"credentials_file"`.
   * _OR_ copy the file contents to `"credentials"`.<br/><br/>
     Remove the other entry. I.e. if you have updated `"credentials_file"`, remove `"credentials"` and vice versa.

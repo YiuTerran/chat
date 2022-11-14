@@ -18,7 +18,7 @@ x-tinode-env-vars: &tinode-env-vars
   "STORE_USE_ADAPTER": "mysql"
   "PPROF_URL": "/pprof"
   # You can provide your own tinode config by setting EXT_CONFIG env var and binding your configuration file to
-  # "EXT_CONFIG": "/etc/tinode/tinode.conf"
+  # "EXT_CONFIG": "/etc/tinode/tinode.json5"
   "WAIT_FOR": "mysql:3306"
   # Push notifications.
   # Modify as appropriate.
@@ -82,7 +82,7 @@ services:
     # You can mount your volumes as necessary:
     # volumes:
     #   # E.g. external config (assuming EXT_CONFIG is set).
-    #   - <path to your tinode.conf>:/etc/tinode/tinode.conf
+    #   - <path to your tinode.json5>:/etc/tinode/tinode.json5
     #   # Logs directory.
     #   - <path to your tinode-0 logs directory>:/var/log
     ports:

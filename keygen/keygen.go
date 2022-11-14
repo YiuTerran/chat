@@ -15,7 +15,9 @@ import (
 
 // Generate API key
 // Composition:
-//  [1:algorithm version][4:deprecated (used to be application ID)][2:key sequence][1:isRoot][16:signature] = 24 bytes
+//
+//	[1:algorithm version][4:deprecated (used to be application ID)][2:key sequence][1:isRoot][16:signature] = 24 bytes
+//
 // convertible to base64 without padding.
 // All integers are little-endian.
 func main() {
@@ -77,7 +79,7 @@ func generate(sequence, isRoot int, hmacSaltB64 string) int {
 			return 1
 		}
 	}
-	// Make sure the salt is base64std encoded: tinode.conf requires std encoding.
+	// Make sure the salt is base64std encoded: tinode.json5 requires std encoding.
 	hmacSaltB64 = base64.StdEncoding.EncodeToString(hmacSalt)
 
 	// [1:algorithm version][4:appid][2:key sequence][1:isRoot]

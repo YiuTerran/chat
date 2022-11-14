@@ -95,13 +95,16 @@ do
     rm -f ./releases/tmp/tinode*
     rm -f ./releases/tmp/init-db*
 
-    buildtag=$dbtag
+    suffix=''
+    if [ "$plat" = "windows" ]; then
+      suffix='.exe'
+    fi
 
     env GOOS="${plat}" GOARCH="${arc}" go build \
-      -ldflags "-s -w -X main.buildstamp=$(git describe --tags)" -tags "${buildtag}" \
-      -o ./releases/tmp/tinode ./server > /dev/null
+      -ldflags "-s -w -X main.buildstamp=$(git describe --tags)" -tags "${dbtag}" \
+      -o ./releases/tmp/tinode"${suffix}" ./server > /dev/null
     env GOOS="${plat}" GOARCH="${arc}" go build \
-      -ldflags "-s -w" -tags "${buildtag}" -o ./releases/tmp/init-db ./tinode-db > /dev/null
+      -ldflags "-s -w" -tags "${dbtag}" -o ./releases/tmp/init-db ./tinode-db > /dev/null
 
     # Build archive. All platforms but Windows use tar for archiving. Windows uses zip.
     if [ "$plat" = "windows" ]; then
@@ -112,16 +115,10 @@ do
       zip -q -r ../"${version}/tinode-${dbtag}.${plat}-${arc}".zip ./*
       popd > /dev/null || exit
     else
-      plat2=$plat
-      # Rename 'darwin' tp 'mac'
-      if [ "$plat" = "darwin" ]; then
-        plat2=mac
-      fi
-
       # Remove possibly existing archive.
-      rm -f ./releases/"${version}/tinode-${dbtag}.${plat2}-${arc}".tar.gz
+      rm -f ./releases/"${version}/tinode-${dbtag}.${plat}-${arc}".tar.gz
       # Generate a new one
-      tar -C ./releases/tmp -zcf ./releases/"${version}/tinode-${dbtag}.${plat2}-${arc}".tar.gz .
+      tar -C ./releases/tmp -zcf ./releases/"${version}/tinode-${dbtag}.${plat}-${arc}".tar.gz .
     fi
   done
 done
