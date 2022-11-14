@@ -12,12 +12,12 @@ done
 tag=${tag#?}
 
 if [ -z "$tag" ]; then
-    echo "Must provide tag as 'tag=v1.2.3'"
-    exit 1
+  echo "Must provide tag as 'tag=v1.2.3'"
+  exit 1
 fi
 
 # Convert tag into a version
-ver=( "${tag//./ }" )
+ver=("${tag//./ }")
 
 # if version contains a dash, it's not a full releave, i.e. v0.1.15.5-rc1
 if [[ ${ver[2]} != *"-"* ]]; then
@@ -30,11 +30,10 @@ if [ "$(uname -m)" != 'x86_64' ]; then
   buildcmd='buildx build --platform=linux/amd64'
 fi
 
-dbtags=( mysql mongodb rethinkdb alldbs )
+dbtags=(mysql mongodb rethinkdb alldbs)
 
 # Build an images for various DB backends
-for dbtag in "${dbtags[@]}"
-do
+for dbtag in "${dbtags[@]}"; do
   if [ "$dbtag" == "alldbs" ]; then
     # For alldbs, container name is tinode/tinode.
     name="tinode/tinode"

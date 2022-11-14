@@ -20,18 +20,18 @@ done
 tag=${tag#?}
 
 if [ -z "$tag" ]; then
-    echo "Must provide tag as 'tag=v1.2.3' or 'v1.2.3-abc0'"
-    exit 1
+  echo "Must provide tag as 'tag=v1.2.3' or 'v1.2.3-abc0'"
+  exit 1
 fi
 
 # Convert tag into a version
-ver=( "${tag//./ }" )
+ver=("${tag//./ }")
 
 if [[ ${ver[2]} != *"-"* ]]; then
   FULLRELEASE=1
 fi
 
-dbtags=( mysql mongodb rethinkdb alldbs )
+dbtags=(mysql mongodb rethinkdb alldbs)
 
 # Read dockerhub login/password from a separate file
 source .dockerhub
@@ -40,15 +40,14 @@ source .dockerhub
 docker login -u "$user" -p "$pass"
 
 # Deploy images for various DB backends
-for dbtag in "${dbtags[@]}"
-do
-  name="$(containerName $dbtag)"
+for dbtag in "${dbtags[@]}"; do
+  name="$(containerName "$dbtag")"
   # Deploy tagged image
   if [ -n "$FULLRELEASE" ]; then
     docker push tinode/"${name}":latest
-    docker push tinode/"${name}":"${ver[0]}.${ver[1]}"
+    docker push tinode/"${name}:${ver[0]}.${ver[1]}"
   fi
-  docker push tinode/"${name}":"${ver[0]}.${ver[1]}.${ver[2]}"
+  docker push tinode/"${name}:${ver[0]}.${ver[1]}.${ver[2]}"
 done
 
 # Deploy chatbot images

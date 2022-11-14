@@ -5,16 +5,16 @@
 # copied and archived.
 
 # Supported OSs: mac (darwin), windows, linux.
-goplat=( windows linux )
+goplat=(windows linux)
 
 # CPUs architectures: amd64 and arm64. The same order as OSs.
-goarc=( amd64 amd64 )
+goarc=(amd64 amd64)
 
 # Number of platform+architectures.
 buildCount=${#goplat[@]}
 
 # Supported database tags
-dbtags=( mysql )
+dbtags=(mysql)
 
 for line in "$@"; do
   eval "$line"
@@ -30,9 +30,9 @@ fi
 
 echo "Releasing $version"
 
-GOSRC=$(dirname "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )")
+GOSRC=$(dirname "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)")
 
-pushd "${GOSRC}"/chat > /dev/null || exit
+pushd "${GOSRC}"/chat >/dev/null || exit
 
 # Prepare directory for the new release
 rm -fR ./releases/"${version}"
@@ -51,8 +51,7 @@ cp ./tinode-db/*.jpg ./releases/tmp
 cp ./tinode-db/credentials.sh ./releases/tmp
 
 # Create directories for and copy TinodeWeb files.
-if [[ -d ./server/static ]]
-then
+if [[ -d ./server/static ]]; then
   mkdir -p ./releases/tmp/static/img
   mkdir ./releases/tmp/static/css
   mkdir ./releases/tmp/static/audio
@@ -76,8 +75,7 @@ else
   echo "TinodeWeb not found, skipping"
 fi
 
-for (( i=0; i<buildCount; i++ ));
-do
+for ((i = 0; i < buildCount; i++)); do
   plat="${goplat[$i]}"
   arc="${goarc[$i]}"
 
@@ -89,10 +87,9 @@ do
   rm -f ./releases/tmp/keygen*
 
   # Keygen is database-independent
-  env GOOS="${plat}" GOARCH="${arc}" go build -ldflags "-s -w" -o ./releases/tmp/keygen"${suffix}" ./keygen > /dev/null
+  env GOOS="${plat}" GOARCH="${arc}" go build -ldflags "-s -w" -o ./releases/tmp/keygen"${suffix}" ./keygen >/dev/null
 
-  for dbtag in "${dbtags[@]}"
-  do
+  for dbtag in "${dbtags[@]}"; do
     echo "Building ${dbtag}-${plat}/${arc}..."
 
     # Remove possibly existing binaries from earlier builds.
@@ -101,18 +98,18 @@ do
 
     env GOOS="${plat}" GOARCH="${arc}" go build \
       -ldflags "-s -w -X main.buildstamp=$(git describe --tags)" -tags "${dbtag}" \
-      -o ./releases/tmp/tinode"${suffix}" ./server > /dev/null
+      -o ./releases/tmp/tinode"${suffix}" ./server >/dev/null
     env GOOS="${plat}" GOARCH="${arc}" go build \
-      -ldflags "-s -w" -tags "${dbtag}" -o ./releases/tmp/init-db"${suffix}" ./tinode-db > /dev/null
+      -ldflags "-s -w" -tags "${dbtag}" -o ./releases/tmp/init-db"${suffix}" ./tinode-db >/dev/null
 
     # Build archive. All platforms but Windows use tar for archiving. Windows uses zip.
     if [ "$plat" = "windows" ]; then
       # Remove possibly existing archive.
       rm -f ./releases/"${version}/tinode-${dbtag}.${plat}-${arc}".zip
       # Generate a new one
-      pushd ./releases/tmp > /dev/null || exit
+      pushd ./releases/tmp >/dev/null || exit
       zip -q -r ../"${version}/tinode-${dbtag}.${plat}-${arc}".zip ./*
-      popd > /dev/null || exit
+      popd >/dev/null || exit
     else
       # Remove possibly existing archive.
       rm -f ./releases/"${version}/tinode-${dbtag}.${plat}-${arc}".tar.gz
@@ -137,9 +134,9 @@ cp "${GOSRC}"/chat/chatbot/python/quotes.txt ./releases/tmp
 cp "${GOSRC}"/chat/chatbot/python/requirements.txt ./releases/tmp
 
 tar -C "${GOSRC}"/chat/releases/tmp -zcf ./releases/"${version}"/py-chatbot.tar.gz .
-pushd ./releases/tmp > /dev/null || exit
+pushd ./releases/tmp >/dev/null || exit
 zip -q -r ../"${version}"/py-chatbot.zip ./*
-popd > /dev/null || exit
+popd >/dev/null || exit
 
 # Release tn-cli
 echo "Packaging tn-cli..."
@@ -151,11 +148,11 @@ cp "${GOSRC}"/chat/tn-cli/*.py ./releases/tmp
 cp "${GOSRC}"/chat/tn-cli/*.txt ./releases/tmp
 
 tar -C "${GOSRC}"/chat/releases/tmp -zcf ./releases/"${version}"/tn-cli.tar.gz .
-pushd ./releases/tmp > /dev/null || exit
+pushd ./releases/tmp >/dev/null || exit
 zip -q -r ../"${version}"/tn-cli.zip ./*
-popd > /dev/null || exit
+popd >/dev/null || exit
 
 # Clean up temporary files
 rm -fR ./releases/tmp
 
-popd > /dev/null || exit
+popd >/dev/null || exit
