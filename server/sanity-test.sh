@@ -61,7 +61,7 @@ build() {
 
 # Initializes Tinode database.
 init-db() {
-  $GOPATH/bin/tinode-db -config=./tinode.conf -data=../tinode-db/data.json
+  $GOPATH/bin/tinode-db -config=./tinode.json5 -data=../tinode-db/data.json
 }
 
 wait-for() {

@@ -9,7 +9,7 @@ HTTP_BASE_PORT=6060
 # Port where the first node will listen for gRPC intra-cluster connections.
 GRPC_BASE_PORT=16060
 
-USAGE="Usage: $0 [ --config <path_to_tinode.conf> ] {start|stop}"
+USAGE="Usage: $0 [ --config <path_to_tinode.json5> ] {start|stop}"
 
 # Your server binary may have a different name and location.
 SERVER='./server'
@@ -36,7 +36,7 @@ while [[ $# -gt 0 ]]; do
       if [ ! -z "$config" ] ; then
         TINODE_CONF=$config
       else
-        TINODE_CONF="tinode.conf"
+        TINODE_CONF="tinode.json5"
       fi
       if [ ! -z "${static_data+x}" ] ; then
         STATIC_DATA_DIR=$static_data

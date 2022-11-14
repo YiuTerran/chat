@@ -49,7 +49,7 @@ may be skipped.
 
 ## Configuration
 
-Add the following section to the `auth_config` in [tinode.conf](../../tinode.json5):
+Add the following section to the `auth_config` in [tinode.json5](../../tinode.json5):
 
 ```js
 ...

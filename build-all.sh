@@ -36,7 +36,7 @@ pushd "${GOSRC}"/chat > /dev/null || exit
 
 # Prepare directory for the new release
 rm -fR ./releases/"${version}"
-mkdir ./releases/"${version}"
+mkdir -p ./releases/"${version}"
 
 # Tar on Mac is inflexible about directories. Let's just copy release files to
 # one directory.
@@ -44,7 +44,7 @@ rm -fR ./releases/tmp
 mkdir -p ./releases/tmp/templ
 
 # Copy templates and database initialization files
-cp ./server/tinode.conf ./releases/tmp
+cp ./server/tinode.json5 ./releases/tmp
 cp ./server/templ/*.templ ./releases/tmp/templ
 cp ./tinode-db/data.json ./releases/tmp
 cp ./tinode-db/*.jpg ./releases/tmp
@@ -81,30 +81,29 @@ do
   plat="${goplat[$i]}"
   arc="${goarc[$i]}"
 
+  suffix=''
+  if [ "$plat" = "windows" ]; then
+    suffix='.exe'
+  fi
   # Remove possibly existing keygen.
   rm -f ./releases/tmp/keygen*
 
   # Keygen is database-independent
-  env GOOS="${plat}" GOARCH="${arc}" go build -ldflags "-s -w" -o ./releases/tmp/keygen ./keygen > /dev/null
+  env GOOS="${plat}" GOARCH="${arc}" go build -ldflags "-s -w" -o ./releases/tmp/keygen"${suffix}" ./keygen > /dev/null
 
   for dbtag in "${dbtags[@]}"
   do
     echo "Building ${dbtag}-${plat}/${arc}..."
 
     # Remove possibly existing binaries from earlier builds.
-    rm -f ./releases/tmp/tinode*
-    rm -f ./releases/tmp/init-db*
-
-    suffix=''
-    if [ "$plat" = "windows" ]; then
-      suffix='.exe'
-    fi
+    rm -f ./releases/tmp/tinode"${suffix}"
+    rm -f ./releases/tmp/init-db"${suffix}"
 
     env GOOS="${plat}" GOARCH="${arc}" go build \
       -ldflags "-s -w -X main.buildstamp=$(git describe --tags)" -tags "${dbtag}" \
       -o ./releases/tmp/tinode"${suffix}" ./server > /dev/null
     env GOOS="${plat}" GOARCH="${arc}" go build \
-      -ldflags "-s -w" -tags "${dbtag}" -o ./releases/tmp/init-db ./tinode-db > /dev/null
+      -ldflags "-s -w" -tags "${dbtag}" -o ./releases/tmp/init-db"${suffix}" ./tinode-db > /dev/null
 
     # Build archive. All platforms but Windows use tar for archiving. Windows uses zip.
     if [ "$plat" = "windows" ]; then

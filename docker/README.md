@@ -74,11 +74,11 @@ All images are available at https://hub.docker.com/r/tinode/
 
 ### External config file
 
-The container comes with a built-in config file which can be customized with values from the environment variables (see [Supported environment variables](#supported_environment_variables) below). If changes are extensive it may be more convenient to replace the built-in config file with a custom one. In that case map the config file located on your host (e.g. `/users/jdoe/new_tinode.conf`) to container (e.g. `/tinode.conf`) using [Docker volumes](https://docs.docker.com/storage/volumes/) `--volume /users/jdoe/new_tinode.conf:/tinode.conf` then instruct the container to use the new config `--env EXT_CONFIG=/tinode.conf`:
+The container comes with a built-in config file which can be customized with values from the environment variables (see [Supported environment variables](#supported_environment_variables) below). If changes are extensive it may be more convenient to replace the built-in config file with a custom one. In that case map the config file located on your host (e.g. `/users/jdoe/new_tinode.json5`) to container (e.g. `/tinode.json5`) using [Docker volumes](https://docs.docker.com/storage/volumes/) `--volume /users/jdoe/new_tinode.json5:/tinode.json5` then instruct the container to use the new config `--env EXT_CONFIG=/tinode.json5`:
 ```
 $ docker run -p 6060:6060 -d --name tinode-srv --network tinode-net \
-		--volume /users/jdoe/new_tinode.conf:/tinode.conf \
-		--env EXT_CONFIG=/tinode.conf \
+		--volume /users/jdoe/new_tinode.json5:/tinode.json5 \
+		--env EXT_CONFIG=/tinode.json5 \
 		tinode/tinode-mysql:latest
 ```
 If you set `EXT_CONFIG` all other environment variables except `RESET_DB`, `FCM_SENDER_ID`, `FCM_VAPID_KEY` are ignored.

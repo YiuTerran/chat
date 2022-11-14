@@ -1,6 +1,6 @@
 # Installing Tinode
 
-The config file [`tinode.conf`](./server/tinode.json5) contains extensive instructions on configuring the server.
+The config file [`tinode.json5`](./server/tinode.json5) contains extensive instructions on configuring the server.
 
 ## Installing from Binaries
 
@@ -75,7 +75,7 @@ See [instructions](./docker/README.md)
     ```
     Building with Go 1.13 or below **will fail**!
 
-5. Open `tinode.conf` (located at `$GOPATH/pkg/mod/github.com/tinode/chat@vX.XX.X/server/`). Check that the database connection parameters are correct for your database. If you are using MySQL make sure [DSN](https://github.com/go-sql-driver/mysql#dsn-data-source-name) in `"mysql"` section is appropriate for your MySQL installation. Option `parseTime=true` is required.
+5. Open `tinode.json5` (located at `$GOPATH/pkg/mod/github.com/tinode/chat@vX.XX.X/server/`). Check that the database connection parameters are correct for your database. If you are using MySQL make sure [DSN](https://github.com/go-sql-driver/mysql#dsn-data-source-name) in `"mysql"` section is appropriate for your MySQL installation. Option `parseTime=true` is required.
 ```js
 	"mysql": {
 		"dsn": "root@tcp(localhost)/tinode?parseTime=true",
@@ -83,7 +83,7 @@ See [instructions](./docker/README.md)
 	},
 ```
 
-6. Make sure you specify the adapter name in your `tinode.conf`. E.g. you want to run Tinode with MySQL:
+6. Make sure you specify the adapter name in your `tinode.json5`. E.g. you want to run Tinode with MySQL:
 ```js
 	"store_config": {
 		...
@@ -121,11 +121,11 @@ MongoDB should run as single node replicaset. See https://docs.mongodb.com/manua
 
 2. Run DB initializer
 	```
-	$GOPATH/bin/init-db -config=./tinode-db/tinode.conf
+	$GOPATH/bin/init-db -config=./tinode-db/tinode.json5
 	```
 	add `-data=./tinode-db/data.json` flag if you want sample data to be loaded:
 	```
-	$GOPATH/bin/init-db -config=./tinode-db/tinode.conf -data=./tinode-db/data.json
+	$GOPATH/bin/init-db -config=./tinode-db/tinode.json5 -data=./tinode-db/data.json
 	```
 
 	DB initializer needs to be run only once per installation. See [instructions](tinode-db/README.md) for more options.
@@ -139,7 +139,7 @@ MongoDB should run as single node replicaset. See https://docs.mongodb.com/manua
 
 5. Run the server
 	```
-	$GOPATH/bin/tinode -config=./server/tinode.conf -static_data=$HOME/tinode/webapp/
+	$GOPATH/bin/tinode -config=./server/tinode.json5 -static_data=$HOME/tinode/webapp/
 	```
 
 6. Test your installation by pointing your browser to [http://localhost:6060/](http://localhost:6060/). The static files from the `-static_data` path are served at web root `/`. You can change this by editing the line `static_mount` in the config file.
@@ -184,8 +184,8 @@ MongoDB should run as single node replicaset. See https://docs.mongodb.com/manua
 
 If you are testing the cluster with all nodes running on the same host, you also must override the `listen` and `grpc_listen` ports. Here is an example for launching two cluster nodes from the same host using the same config file:
 ```
-$GOPATH/bin/tinode -config=./server/tinode.conf -static_data=./server/webapp/ -listen=:6060 -grpc_listen=:6080 -cluster_self=one &
-$GOPATH/bin/tinode -config=./server/tinode.conf -static_data=./server/webapp/ -listen=:6061 -grpc_listen=:6081 -cluster_self=two &
+$GOPATH/bin/tinode -config=./server/tinode.json5 -static_data=./server/webapp/ -listen=:6060 -grpc_listen=:6080 -cluster_self=one &
+$GOPATH/bin/tinode -config=./server/tinode.json5 -static_data=./server/webapp/ -listen=:6061 -grpc_listen=:6081 -cluster_self=two &
 ```
 A bash script [run-cluster.sh](./server/run-cluster.sh) may be found useful.
 
@@ -200,7 +200,7 @@ Video calls use [WebRTC](https://en.wikipedia.org/wiki/WebRTC). WebRTC is a peer
 
 Tinode does not provide ICE servers out of the box. You must install and configure (or purchase) your own servers otherwise video and voice calling will not be available.
 
-Once you obtain the ICE TURN/STUN configuration from your service provider, add it to `tinode.conf` section `"webrtc"` - `"ice_servers"` (or `"ice_servers_file"`). Also change `"webrtc"` - `"enabled"` to `true`. An example configuration is provided in the `tinode.conf` for illustration only. IT WILL NOT FUNCTION because it uses dummy values instead of actual server addresses.
+Once you obtain the ICE TURN/STUN configuration from your service provider, add it to `tinode.json5` section `"webrtc"` - `"ice_servers"` (or `"ice_servers_file"`). Also change `"webrtc"` - `"enabled"` to `true`. An example configuration is provided in the `tinode.json5` for illustration only. IT WILL NOT FUNCTION because it uses dummy values instead of actual server addresses.
 
 
 ### Note on Running the Server in Background
@@ -210,7 +210,7 @@ There is [no clean way](https://github.com/golang/go/issues/227) to daemonize a 
 Specific note for [nohup](https://en.wikipedia.org/wiki/Nohup) users: an `exit` must be issued immediately after `nohup` call to close the foreground session cleanly:
 
 ```
-nohup $GOPATH/bin/server -config=./server/tinode.conf -static_data=$HOME/tinode/webapp/ &
+nohup $GOPATH/bin/server -config=./server/tinode.json5 -static_data=$HOME/tinode/webapp/ &
 exit
 ```
 
