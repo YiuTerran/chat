@@ -10,10 +10,10 @@ function containerName() {
     # Otherwise, tinode-$dbtag.
     local name="tinode-${dbtag}"
   fi
-  echo $name
+  echo "$name"
 }
 
-for line in $@; do
+for line in "$@"; do
   eval "$line"
 done
 
@@ -25,7 +25,7 @@ if [ -z "$tag" ]; then
 fi
 
 # Convert tag into a version
-ver=( ${tag//./ } )
+ver=( "${tag//./ }" )
 
 if [[ ${ver[2]} != *"-"* ]]; then
   FULLRELEASE=1
@@ -37,7 +37,7 @@ dbtags=( mysql mongodb rethinkdb alldbs )
 source .dockerhub
 
 # Login to docker hub
-docker login -u $user -p $pass
+docker login -u "$user" -p "$pass"
 
 # Deploy images for various DB backends
 for dbtag in "${dbtags[@]}"
@@ -45,10 +45,10 @@ do
   name="$(containerName $dbtag)"
   # Deploy tagged image
   if [ -n "$FULLRELEASE" ]; then
-    docker push tinode/${name}:latest
-    docker push tinode/${name}:"${ver[0]}.${ver[1]}"
+    docker push tinode/"${name}":latest
+    docker push tinode/"${name}":"${ver[0]}.${ver[1]}"
   fi
-  docker push tinode/${name}:"${ver[0]}.${ver[1]}.${ver[2]}"
+  docker push tinode/"${name}":"${ver[0]}.${ver[1]}.${ver[2]}"
 done
 
 # Deploy chatbot images

@@ -2,12 +2,12 @@
 
 echo "Packaging python tinode-grpc..."
 
-pushd ./pbx > /dev/null
+pushd ./pbx > /dev/null || exit
 
 # Generate grpc bindings from the proto file.
 ./py-generate.sh v=3
 
-pushd ../py_grpc > /dev/null
+pushd ../py_grpc > /dev/null || exit
 
 # Generate version file from git tags
 python3 version.py
@@ -15,5 +15,5 @@ python3 version.py
 # Generate tinode-grpc package
 python3 setup.py -q sdist bdist_wheel
 
-popd > /dev/null
-popd > /dev/null
+popd > /dev/null || exit
+popd > /dev/null || exit

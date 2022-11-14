@@ -5,39 +5,38 @@
 # copied and archived.
 
 # Supported OSs: mac (darwin), windows, linux.
-goplat=( darwin darwin windows linux )
+goplat=( windows linux )
 
 # CPUs architectures: amd64 and arm64. The same order as OSs.
-goarc=( amd64 arm64 amd64 amd64 )
+goarc=( amd64 amd64 )
 
 # Number of platform+architectures.
 buildCount=${#goplat[@]}
 
 # Supported database tags
-dbadapters=( mysql mongodb rethinkdb )
-dbtags=( ${dbadapters[@]} alldbs )
+dbtags=( mysql )
 
-for line in $@; do
+for line in "$@"; do
   eval "$line"
 done
 
-version=${tag#?}
+version=$1
 
 if [ -z "$version" ]; then
-  # Get last git tag as release version. Tag looks like 'v.1.2.3', so strip 'v'.
-  version=`git describe --tags`
+  # Get last git tag as release version. Tag looks like 'v1.2.3', so strip 'v'.
+  version=$(git describe --tags)
   version=${version#?}
 fi
 
 echo "Releasing $version"
 
-GOSRC=${GOPATH}/src/github.com/tinode
+GOSRC=$(dirname "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )")
 
-pushd ${GOSRC}/chat > /dev/null
+pushd "${GOSRC}"/chat > /dev/null || exit
 
 # Prepare directory for the new release
-rm -fR ./releases/${version}
-mkdir ./releases/${version}
+rm -fR ./releases/"${version}"
+mkdir ./releases/"${version}"
 
 # Tar on Mac is inflexible about directories. Let's just copy release files to
 # one directory.
@@ -77,7 +76,7 @@ else
   echo "TinodeWeb not found, skipping"
 fi
 
-for (( i=0; i<${buildCount}; i++ ));
+for (( i=0; i<buildCount; i++ ));
 do
   plat="${goplat[$i]}"
   arc="${goarc[$i]}"
@@ -96,16 +95,10 @@ do
     rm -f ./releases/tmp/tinode*
     rm -f ./releases/tmp/init-db*
 
-    # Build tinode server and database initializer for RethinkDb and MySQL.
-    # For 'alldbs' tag, we compile in all available DB adapters.
-    if [ "$dbtag" = "alldbs" ]; then
-      buildtag="${dbadapters[@]}"
-    else
-      buildtag=$dbtag
-    fi
+    buildtag=$dbtag
 
     env GOOS="${plat}" GOARCH="${arc}" go build \
-      -ldflags "-s -w -X main.buildstamp=`git describe --tags`" -tags "${buildtag}" \
+      -ldflags "-s -w -X main.buildstamp=$(git describe --tags)" -tags "${buildtag}" \
       -o ./releases/tmp/tinode ./server > /dev/null
     env GOOS="${plat}" GOARCH="${arc}" go build \
       -ldflags "-s -w" -tags "${buildtag}" -o ./releases/tmp/init-db ./tinode-db > /dev/null
@@ -113,11 +106,11 @@ do
     # Build archive. All platforms but Windows use tar for archiving. Windows uses zip.
     if [ "$plat" = "windows" ]; then
       # Remove possibly existing archive.
-      rm -f ./releases/${version}/tinode-${dbtag}."${plat}-${arc}".zip
+      rm -f ./releases/"${version}/tinode-${dbtag}.${plat}-${arc}".zip
       # Generate a new one
-      pushd ./releases/tmp > /dev/null
-      zip -q -r ../${version}/tinode-${dbtag}."${plat}-${arc}".zip ./*
-      popd > /dev/null
+      pushd ./releases/tmp > /dev/null || exit
+      zip -q -r ../"${version}/tinode-${dbtag}.${plat}-${arc}".zip ./*
+      popd > /dev/null || exit
     else
       plat2=$plat
       # Rename 'darwin' tp 'mac'
@@ -126,9 +119,9 @@ do
       fi
 
       # Remove possibly existing archive.
-      rm -f ./releases/${version}/tinode-${dbtag}."${plat2}-${arc}".tar.gz
+      rm -f ./releases/"${version}/tinode-${dbtag}.${plat2}-${arc}".tar.gz
       # Generate a new one
-      tar -C ./releases/tmp -zcf ./releases/${version}/tinode-${dbtag}."${plat2}-${arc}".tar.gz .
+      tar -C ./releases/tmp -zcf ./releases/"${version}/tinode-${dbtag}.${plat2}-${arc}".tar.gz .
     fi
   done
 done
@@ -143,14 +136,14 @@ echo "Packaging chatbot.py..."
 rm -fR ./releases/tmp
 mkdir -p ./releases/tmp
 
-cp ${GOSRC}/chat/chatbot/python/chatbot.py ./releases/tmp
-cp ${GOSRC}/chat/chatbot/python/quotes.txt ./releases/tmp
-cp ${GOSRC}/chat/chatbot/python/requirements.txt ./releases/tmp
+cp "${GOSRC}"/chat/chatbot/python/chatbot.py ./releases/tmp
+cp "${GOSRC}"/chat/chatbot/python/quotes.txt ./releases/tmp
+cp "${GOSRC}"/chat/chatbot/python/requirements.txt ./releases/tmp
 
-tar -C ${GOSRC}/chat/releases/tmp -zcf ./releases/${version}/py-chatbot.tar.gz .
-pushd ./releases/tmp > /dev/null
-zip -q -r ../${version}/py-chatbot.zip ./*
-popd > /dev/null
+tar -C "${GOSRC}"/chat/releases/tmp -zcf ./releases/"${version}"/py-chatbot.tar.gz .
+pushd ./releases/tmp > /dev/null || exit
+zip -q -r ../"${version}"/py-chatbot.zip ./*
+popd > /dev/null || exit
 
 # Release tn-cli
 echo "Packaging tn-cli..."
@@ -158,15 +151,15 @@ echo "Packaging tn-cli..."
 rm -fR ./releases/tmp
 mkdir -p ./releases/tmp
 
-cp ${GOSRC}/chat/tn-cli/*.py ./releases/tmp
-cp ${GOSRC}/chat/tn-cli/*.txt ./releases/tmp
+cp "${GOSRC}"/chat/tn-cli/*.py ./releases/tmp
+cp "${GOSRC}"/chat/tn-cli/*.txt ./releases/tmp
 
-tar -C ${GOSRC}/chat/releases/tmp -zcf ./releases/${version}/tn-cli.tar.gz .
-pushd ./releases/tmp > /dev/null
-zip -q -r ../${version}/tn-cli.zip ./*
-popd > /dev/null
+tar -C "${GOSRC}"/chat/releases/tmp -zcf ./releases/"${version}"/tn-cli.tar.gz .
+pushd ./releases/tmp > /dev/null || exit
+zip -q -r ../"${version}"/tn-cli.zip ./*
+popd > /dev/null || exit
 
 # Clean up temporary files
 rm -fR ./releases/tmp
 
-popd > /dev/null
+popd > /dev/null || exit
