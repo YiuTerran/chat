@@ -16,7 +16,7 @@ cleanup() {
 fail() {
   cleanup
   echo "**************************************************"
-  printf "Tests Failed: ${@}\n"
+  printf "Tests Failed: %s\n" "${*}"
   echo "**************************************************"
   exit 1
 }
@@ -53,20 +53,20 @@ setup() {
 
 # Compiles Tinode binaries.
 build() {
-  go install -tags mysql -ldflags "-X main.buildstamp=`date -u '+%Y%m%dT%H:%M:%SZ'`" \
+  go install -tags mysql -ldflags "-X main.buildstamp=$(date -u '+%Y%m%dT%H:%M:%SZ')" \
     github.com/tinode/chat/tinode-db \
     github.com/tinode/chat/server && \
-  ln -s $TINODE_BINARY
+  ln -s "$TINODE_BINARY" .
 }
 
 # Initializes Tinode database.
 init-db() {
-  $GOPATH/bin/tinode-db -config=./tinode.json5 -data=../tinode-db/data.json
+  "$GOPATH"/bin/tinode-db -config=./tinode.json5 -data=../tinode-db/data.json
 }
 
 wait-for() {
   local port=$1
-  while ! nc -z localhost $port; do
+  while ! nc -z localhost "$port"; do
     sleep 1
   done
 }
@@ -77,20 +77,20 @@ run-server() {
 }
 
 send-requests() {
-  local expect=12
+  local expected=12
   local port=$1
   local id=$2
-  local outfile=$(mktemp /tmp/tinode-${id}.txt)
+  local outfile=$(mktemp /tmp/tinode-"${id}".txt)
   pushd .
-  cd ../tn-cli
-  python3 tn-cli.py --host=localhost:${port} --no-login < sample-script.txt > $outfile || fail "Test script failed (instance port ${port})"
-  popd
-  num_positive_responses=`grep -c '<= 20[0-9]' $outfile`
-  if [ $num_positive_responses -ne expect ]
+  cd ../tn-cli || exit
+  python3 tn-cli.py --host=localhost:"${port}" --no-login < sample-script.txt > "$outfile" || fail "Test script failed (instance port ${port})"
+  popd || exit
+  num_positive_responses=$(grep -c '<= 20[0-9]' "$outfile")
+  if [ "$num_positive_responses" != expected ]
   then
     fail "Instance ${port}: unexpected number of 20X responses: ${num_positive_responses} (expected ${expected}). Log file ${outfile}"
   fi
-  rm $outfile
+  rm "$outfile"
 }
 
 # Catch unexpected failures, do cleanup and output an error message
@@ -101,7 +101,7 @@ trap 'cleanup ; fail "For Unexpected Reasons"'\
 #trap 'cleanup'\
 #  EXIT
 
-run_id=`date +%s`
+run_id=$(date +%s)
 echo "+----------------------------------------------------+"
 echo "|                 Tinode sanity test.                |"
 echo "+----------------------------------------------------+"
@@ -113,8 +113,8 @@ init-db || fail "Could not initialize Tinode database"
 run-server || fail "Could not start tinode"
 
 # Test requests.
-send-requests 16060 $run_id
-send-requests 16061 $run_id
-send-requests 16062 $run_id
+send-requests 16060 "$run_id"
+send-requests 16061 "$run_id"
+send-requests 16062 "$run_id"
 
 pass

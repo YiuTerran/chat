@@ -15,7 +15,7 @@ USAGE="Usage: $0 [ --config <path_to_tinode.json5> ] {start|stop}"
 SERVER='./server'
 
 if [ "$#" -lt "1" ]; then
-  echo $USAGE
+  echo "$USAGE"
   exit 1
 fi
 
@@ -33,12 +33,12 @@ while [[ $# -gt 0 ]]; do
       shift # value
       ;;
     start)
-      if [ ! -z "$config" ] ; then
+      if [ -n "$config" ] ; then
         TINODE_CONF=$config
       else
         TINODE_CONF="tinode.json5"
       fi
-      if [ ! -z "${static_data+x}" ] ; then
+      if [ -n "${static_data+x}" ] ; then
         STATIC_DATA_DIR=$static_data
       else
         STATIC_DATA_DIR="static"
@@ -51,7 +51,7 @@ while [[ $# -gt 0 ]]; do
       for NODE_NAME in "${ALL_NODE_NAMES[@]}"
       do
         # Start the node
-        $SERVER -config=${TINODE_CONF} -cluster_self=${NODE_NAME} -listen=:${HTTP_PORT} -grpc_listen=:${GRPC_PORT} -static_data=${STATIC_DATA_DIR} -log_flags=stdFlags,shortfile &
+        $SERVER -config=${TINODE_CONF} -cluster_self="${NODE_NAME}" -listen=:${HTTP_PORT} -grpc_listen=:${GRPC_PORT} -static_data=${STATIC_DATA_DIR} -log_flags=stdFlags,shortfile &
         # Save PID of the node to a temp file.
         # /var/tmp/ does not requre root access.
         echo $!> "/var/tmp/tinode-${NODE_NAME}.pid"
@@ -67,14 +67,14 @@ while [[ $# -gt 0 ]]; do
       for NODE_NAME in "${ALL_NODE_NAMES[@]}"
       do
         # Read PIDs of running nodes from temp files and kill them.
-        kill `cat /var/tmp/tinode-${NODE_NAME}.pid`
+        kill "$(cat /var/tmp/tinode-"${NODE_NAME}".pid)"
         # Clean up: delete temp files.
         rm "/var/tmp/tinode-${NODE_NAME}.pid"
       done
       exit 0
       ;;
     *)
-      echo $USAGE
+      echo "$USAGE"
       exit 1
   esac
 done
